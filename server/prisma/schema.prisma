@@ -1,0 +1,160 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Role {
+  id          String   @id // e.g. "superadmin", "fleet_manager"
+  name        String
+  description String
+  users       User[]
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  roleId       String
+  role         Role          @relation(fields: [roleId], references: [id])
+  avatarUrl    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  logs         ActivityLog[]
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userEmail String?
+  action    String
+  details   String
+  timestamp DateTime @default(now())
+}
+
+model Vehicle {
+  id                 String              @id @default(uuid())
+  registrationNumber String              @unique
+  name               String
+  type               String              // Truck, Semi-Truck, Van, Cargo Van
+  manufacturer       String
+  year               Int
+  fuelType           String              // Diesel, Petrol, Electric, CNG
+  loadCapacity       Float
+  odometer           Float
+  acquisitionCost    Float
+  status             String              // Available, On Trip, In Shop, Retired, Reserved, Breakdown
+  region             String              // North, South, East, West
+  insuranceUrl       String?
+  pucUrl             String?
+  fitnessCertUrl     String?
+  permitUrl          String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  trips              Trip[]
+  maintenance        MaintenanceRecord[]
+  fuelLogs           FuelLog[]
+  expenses           Expense[]
+}
+
+model Driver {
+  id                 String    @id @default(uuid())
+  name               String
+  licenseNumber      String    @unique
+  licenseCategory    String
+  licenseExpiryDate  DateTime
+  contactNumber      String
+  emergencyContact   String
+  safetyScore        Float
+  status             String    // Available, On Trip, Off Duty, Suspended, Leave
+  licenseUrl         String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  trips              Trip[]
+  fuelLogs           FuelLog[]
+  expenses           Expense[]
+}
+
+model Trip {
+  id                String    @id @default(uuid())
+  source            String
+  destination       String
+  stops             String    // serialized JSON array
+  cargoType         String
+  cargoWeight       Float
+  priority          String    // High, Medium, Low
+  customer          String
+  notes             String?
+  revenue           Float
+  status            String    // Draft, Dispatched, Completed, Cancelled
+  plannedDistance   Float
+  actualDistance    Float?
+  fuelConsumed      Float?
+  assignedVehicleId String?
+  assignedVehicle   Vehicle?  @relation(fields: [assignedVehicleId], references: [id], onDelete: SetNull)
+  assignedDriverId  String?
+  assignedDriver    Driver?   @relation(fields: [assignedDriverId], references: [id], onDelete: SetNull)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  expenses          Expense[]
+}
+
+model MaintenanceRecord {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  type        String   // Preventive, Corrective, Breakdown
+  serviceDate DateTime
+  workshop    String
+  mechanic    String
+  cost        Float
+  parts       String?
+  labour      Float?
+  status      String   // Pending, Scheduled, In Progress, Completed, Cancelled
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FuelLog {
+  id           String   @id @default(uuid())
+  vehicleId    String
+  vehicle      Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  driverId     String
+  driver       Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  date         DateTime
+  odometer     Float
+  fuelQuantity Float
+  price        Float
+  totalCost    Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Expense {
+  id        String   @id @default(uuid())
+  category  String   // Fuel, Maintenance, Toll, Parking, Repair, Insurance, Tax, Salary, Misc
+  amount    Float
+  date      DateTime
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  driverId  String?
+  driver    Driver?  @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  tripId    String?
+  trip      Trip?    @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  type      String   // LICENSE_EXPIRY, INSURANCE_EXPIRY, MAINTENANCE_DUE, TRIP_ASSIGNED
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
