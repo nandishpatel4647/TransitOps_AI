@@ -5,11 +5,12 @@
 A complete Transport Management System (TMS) that digitizes the entire lifecycle of transport operations — from vehicle registration to trip dispatch, maintenance, fuel tracking, and business intelligence — built for **Odoo Hackathon 2026**.
 
 <p align="left">
-  <img src="https://img.shields.io/badge/status-in%20development-orange" alt="status" />
+  <img src="https://img.shields.io/badge/status-live-brightgreen" alt="status" />
   <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black" alt="react" />
   <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="typescript" />
   <img src="https://img.shields.io/badge/Node.js-Express-339933?logo=node.js&logoColor=white" alt="node" />
   <img src="https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white" alt="prisma" />
+  <img src="https://img.shields.io/badge/Deployed-Railway-0B0D0E?logo=railway&logoColor=white" alt="railway" />
   <img src="https://img.shields.io/badge/License-MIT-blue" alt="license" />
 </p>
 
@@ -17,6 +18,7 @@ A complete Transport Management System (TMS) that digitizes the entire lifecycle
 
 ## 📖 Table of Contents
 
+- [Live Demo](#-live-demo)
 - [Problem Statement](#-problem-statement)
 - [Overview](#-overview)
 - [Target Users](#-target-users)
@@ -30,10 +32,17 @@ A complete Transport Management System (TMS) that digitizes the entire lifecycle
 - [Project Structure](#-project-structure)
 - [Example Workflow](#-example-workflow)
 - [Roadmap](#-roadmap--module-status)
-- [Screenshots](#-screenshots)
 - [Known Limitations](#-known-limitations)
 - [Team](#-team)
 - [License](#-license)
+
+---
+
+## 🌐 Live Demo
+
+> **🔗 [Open TransitOps AI →](LIVE_URL_PLACEHOLDER)**
+>
+> Log in with any of the [demo credentials](#-demo-credentials) below to explore the full platform.
 
 ---
 
@@ -95,6 +104,9 @@ Fuel logs with auto-computed efficiency, categorized expense tracking linked to 
 ### 📈 Reports & Analytics
 Fuel efficiency, fleet utilization, operational cost, and **Vehicle ROI** reports with CSV export.
 
+### 🔔 Notifications
+Automated alerts for license expiry, insurance expiry, upcoming maintenance, and trip assignments.
+
 ### 🤖 AI Fleet Assistant
 Natural-language chat interface to query live fleet data — *"Which vehicles need maintenance next week?"*, *"Show drivers with expired licenses"*, *"Which vehicle has the lowest ROI?"*
 
@@ -102,10 +114,13 @@ Natural-language chat interface to query live fleet data — *"Which vehicles ne
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, TanStack Query, React Router, React Hook Form, Zod, Recharts, Framer Motion
-- **Backend:** Node.js, Express, TypeScript, Zod, JWT, bcrypt, Multer
-- **Database & ORM:** SQLite, Prisma ORM
-- **Styling & Icons:** Tailwind CSS, Lucide React
+| Layer | Technologies |
+|---|---|
+| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, TanStack Query, React Router, React Hook Form, Zod, Recharts, Framer Motion |
+| **Backend** | Node.js, Express, TypeScript, Zod, JWT, bcrypt, Multer |
+| **Database & ORM** | SQLite, Prisma ORM |
+| **Deployment** | Railway (monolith — server serves built frontend) |
+| **Styling & Icons** | Tailwind CSS, Lucide React |
 
 ---
 
@@ -113,20 +128,21 @@ Natural-language chat interface to query live fleet data — *"Which vehicles ne
 
 ```
 ┌─────────────────────┐      HTTP Requests      ┌───────────────────────────┐
-│     Vite React      │ ──────────────────────> │    Node Express Server    │
-│  (client, port 5173)│ <────────────────────── │  (server, port 3000)      │
+│     Vite React      │ ──────────────────────→ │    Node Express Server    │
+│  (client, port 5173)│ ←────────────────────── │  (server, port 3000)      │
 └─────────────────────┘     JWT (httpOnly cookie)     └──────────┬───────────┘
                                                                    │
                                                            Prisma ORM
                                                                    │
                                                         ┌──────────▼───────────┐
-                                                        │   SQLite / Postgres   │
+                                                        │       SQLite          │
                                                         └────────────────────────┘
 ```
 
 - **Monorepo** with independent `/client` and `/server` packages
 - **Stateless auth** via JWT stored in httpOnly, sameSite cookies
 - **Transactional business logic** — all status transitions (dispatch, complete, maintenance) run as atomic Prisma transactions to prevent race conditions
+- **Production**: Server serves the pre-built React frontend as static files with SPA catch-all routing
 
 ---
 
@@ -134,13 +150,13 @@ Natural-language chat interface to query live fleet data — *"Which vehicles ne
 
 | Entity | Description |
 |---|---|
+| `Role` | User roles with permissions (Super Admin, Fleet Manager, etc.) |
 | `User` | Login credentials, role, profile, avatar |
 | `ActivityLog` | Full audit trail of user actions |
 | `Vehicle` | Registry, documents, status, financials |
 | `Driver` | Profile, license, safety score, status |
 | `Trip` | Lifecycle, cargo, assigned vehicle/driver, timeline |
-| `TripStop` | Multi-stop trip legs |
-| `MaintenanceLog` | Service records linked to vehicles |
+| `MaintenanceRecord` | Service records linked to vehicles |
 | `FuelLog` | Fuel entries linked to vehicle/driver |
 | `Expense` | Categorized costs linked to vehicle/trip/driver |
 | `Notification` | System and compliance alerts |
@@ -183,7 +199,7 @@ cd TransitOps_AI
 ```bash
 cd server
 npm install
-# Configure environmental values in .env
+cp .env.example .env  # Configure environment variables
 npx prisma migrate dev
 npx prisma db seed
 npm run dev
@@ -200,6 +216,8 @@ Client runs at `http://localhost:5173`
 
 ### 4. Open the app
 Navigate to `http://localhost:5173` and log in using any of the [demo credentials](#-demo-credentials) below.
+
+> **Or try the live deployment → [TransitOps AI](LIVE_URL_PLACEHOLDER)**
 
 ---
 
@@ -223,24 +241,30 @@ All seeded accounts use the password: **`demo1234`**
 ## 📁 Project Structure
 
 ```
-transitops-ai/
+TransitOps_AI/
 ├── client/                 # React + TypeScript frontend
 │   ├── src/
-│   │   ├── components/     # Sidebar, Navbar, shared UI
-│   │   ├── context/        # AuthContext, ThemeContext
+│   │   ├── components/     # Sidebar, Navbar, Toast
+│   │   ├── context/        # AuthContext (JWT session)
+│   │   ├── lib/            # Axios API client
 │   │   ├── pages/          # Login, Dashboard, Vehicles, Drivers, Trips...
-│   │   └── App.tsx
+│   │   └── App.tsx         # Route definitions & RBAC guards
+│   ├── vite.config.ts
 │   └── package.json
 ├── server/                 # Node + Express + TypeScript backend
 │   ├── prisma/
-│   │   ├── schema.prisma
-│   │   └── seed.ts
+│   │   ├── schema.prisma   # Database schema
+│   │   ├── migrations/     # Prisma migration history
+│   │   └── seed.ts         # Demo data seeder
 │   ├── src/
-│   │   ├── middleware/     # auth.ts (JWT + RBAC)
-│   │   ├── routes/
-│   │   └── index.ts
+│   │   ├── middleware/      # auth.ts (JWT + RBAC middleware)
+│   │   ├── routes/          # API route handlers
+│   │   └── index.ts         # Express app entry point
+│   ├── uploads/             # Uploaded documents & avatars
 │   └── package.json
-├── uploads/                 # Vehicle/driver documents, avatars
+├── package.json             # Root monorepo scripts
+├── railway.json             # Railway deployment config
+├── Procfile
 └── README.md
 ```
 
@@ -264,30 +288,18 @@ transitops-ai/
 
 | # | Module | Status |
 |---|---|---|
-| 1 | Auth, RBAC & Scaffold | 🟢 Complete |
-| 2 | Dashboard | 🟢 Complete |
-| 3 | Vehicle Management | 🟢 Complete |
-| 4 | Driver Management | 🟢 Complete |
-| 5 | Trip Management | 🟡 In Progress |
-| 6 | Smart Dispatch Board | ⚪ Planned |
-| 7 | Maintenance Management | ⚪ Planned |
-| 8 | Fuel & Expense Tracking | ⚪ Planned |
-| 9 | Reports & Analytics | ⚪ Planned |
-| 10 | Notifications | ⚪ Stretch Goal |
-| 11 | AI Fleet Assistant | ⚪ Stretch Goal |
-| 12 | Final Polish & Responsive QA | ⚪ Planned |
-
----
-
-## 🖼️ Screenshots
-
-> _Add screenshots here as modules are completed:_
-
-```md
-![Dashboard](./docs/screenshots/dashboard.png)
-![Trip Management](./docs/screenshots/trips.png)
-![Dispatch Board](./docs/screenshots/dispatch.png)
-```
+| 1 | Auth, RBAC & Scaffold | ✅ Complete |
+| 2 | Dashboard | ✅ Complete |
+| 3 | Vehicle Management | ✅ Complete |
+| 4 | Driver Management | ✅ Complete |
+| 5 | Trip Management | ✅ Complete |
+| 6 | Smart Dispatch Board | ✅ Complete |
+| 7 | Maintenance Management | ✅ Complete |
+| 8 | Fuel & Expense Tracking | ✅ Complete |
+| 9 | Reports & Analytics | ✅ Complete |
+| 10 | Notifications | ✅ Complete |
+| 11 | AI Fleet Assistant | ✅ Complete |
+| 12 | Production Deployment | ✅ Complete |
 
 ---
 
@@ -295,7 +307,7 @@ transitops-ai/
 
 - Built with SQLite for hackathon speed; schema is Postgres-ready via a single `DATABASE_URL` swap.
 - Forgot Password / Email Verification flows are intentionally excluded — seeded demo accounts are used instead.
-- AI Assistant uses a lightweight query-matching layer rather than a full LLM integration in the base build.
+- AI Assistant uses a lightweight intent-matching engine rather than a full LLM integration in the base build.
 - File uploads are stored locally (`/uploads`), not on cloud storage, for this build.
 
 ---
@@ -316,4 +328,4 @@ This project was built for **Odoo Hackathon 2026** and is provided under the [MI
 
 ---
 
-<p align="center">Built with ⚡ under 8 hours for Odoo Hackathon 2026</p>
+<p align="center">Built with ⚡ for Odoo Hackathon 2026</p>
