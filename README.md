@@ -40,7 +40,7 @@ A complete Transport Management System (TMS) that digitizes the entire lifecycle
 
 ## 🌐 Live Demo
 
-> **🔗 [Open TransitOps AI →](LIVE_URL_PLACEHOLDER)**
+> **🔗 [Open TransitOps AI →](https://transitops-ai-production.up.railway.app)**
 >
 > Log in with any of the [demo credentials](#-demo-credentials) below to explore the full platform.
 
@@ -217,7 +217,7 @@ Client runs at `http://localhost:5173`
 ### 4. Open the app
 Navigate to `http://localhost:5173` and log in using any of the [demo credentials](#-demo-credentials) below.
 
-> **Or try the live deployment → [TransitOps AI](LIVE_URL_PLACEHOLDER)**
+> **Or try the live deployment → [TransitOps AI](https://transitops-ai-production.up.railway.app)**
 
 ---
 
