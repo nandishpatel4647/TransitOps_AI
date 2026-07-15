@@ -2,7 +2,7 @@
 
 ### Enterprise Smart Fleet & Transport Operations Platform
 
-A complete Transport Management System (TMS) that digitizes the entire lifecycle of transport operations — from vehicle registration to trip dispatch, maintenance, fuel tracking, and business intelligence — built for **Odoo Hackathon 2026**.
+A complete Transport Management System (TMS) that digitizes the entire lifecycle of transport operations from vehicle registration to trip dispatch, maintenance, fuel tracking, and business intelligence built for **Odoo Hackathon 2026**.
 
 <p align="left">
   <img src="https://img.shields.io/badge/status-live-brightgreen" alt="status" />
