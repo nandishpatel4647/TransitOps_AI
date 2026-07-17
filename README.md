@@ -5,6 +5,10 @@
 A complete Transport Management System (TMS) that digitizes the entire lifecycle of transport operations from vehicle registration to trip dispatch, maintenance, fuel tracking, and business intelligence built for **Odoo Hackathon 2026**.
 
 <p align="left">
+  <a href="https://transitops-ai-production.up.railway.app"><img src="https://img.shields.io/badge/🔗_Live_Demo-TransitOps_AI-blue?style=for-the-badge" alt="Live Demo" /></a>
+</p>
+
+<p align="left">
   <img src="https://img.shields.io/badge/status-live-brightgreen" alt="status" />
   <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black" alt="react" />
   <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="typescript" />
@@ -16,9 +20,23 @@ A complete Transport Management System (TMS) that digitizes the entire lifecycle
 
 ---
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="./docs/screenshots/dashboard.png" width="48%" alt="Operations Dashboard" />
+  <img src="./docs/screenshots/vehicles.png" width="48%" alt="Vehicle Management" />
+</p>
+<p align="center">
+  <img src="./docs/screenshots/dispatch.png" width="48%" alt="Smart Dispatch Board" />
+  <img src="./docs/screenshots/login.png" width="48%" alt="Login Page" />
+</p>
+
+---
+
 ## 📖 Table of Contents
 
 - [Live Demo](#-live-demo)
+- [Screenshots](#-screenshots)
 - [Problem Statement](#-problem-statement)
 - [Overview](#-overview)
 - [Target Users](#-target-users)
@@ -28,11 +46,13 @@ A complete Transport Management System (TMS) that digitizes the entire lifecycle
 - [Database Schema](#-database-schema)
 - [Business Rules](#-business-rules)
 - [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
 - [Demo Credentials](#-demo-credentials)
 - [Project Structure](#-project-structure)
 - [Example Workflow](#-example-workflow)
 - [Roadmap](#-roadmap--module-status)
 - [Known Limitations](#-known-limitations)
+- [Contributing](#-contributing)
 - [Team](#-team)
 - [License](#-license)
 
@@ -43,6 +63,8 @@ A complete Transport Management System (TMS) that digitizes the entire lifecycle
 > **🔗 [Open TransitOps AI →](https://transitops-ai-production.up.railway.app)**
 >
 > Log in with any of the [demo credentials](#-demo-credentials) below to explore the full platform.
+>
+> **Quick access:** Use `superadmin@transitops.ai` / `demo1234` for full access to all modules.
 
 ---
 
@@ -130,13 +152,13 @@ Natural-language chat interface to query live fleet data — *"Which vehicles ne
 ┌─────────────────────┐      HTTP Requests      ┌───────────────────────────┐
 │     Vite React      │ ──────────────────────→ │    Node Express Server    │
 │  (client, port 5173)│ ←────────────────────── │  (server, port 3000)      │
-└─────────────────────┘     JWT (httpOnly cookie)     └──────────┬───────────┘
-                                                                   │
-                                                           Prisma ORM
-                                                                   │
-                                                        ┌──────────▼───────────┐
-                                                        │       SQLite          │
-                                                        └────────────────────────┘
+└─────────────────────┘   JWT (httpOnly cookie)  └──────────┬───────────────┘
+                                                            │
+                                                      Prisma ORM
+                                                            │
+                                                 ┌──────────▼───────────┐
+                                                 │       SQLite          │
+                                                 └──────────────────────┘
 ```
 
 - **Monorepo** with independent `/client` and `/server` packages
@@ -185,9 +207,9 @@ TransitOps AI enforces the following rules at the **database and API level** (no
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js ≥ 18
-- npm or pnpm
-- Git
+- **Node.js** ≥ 18
+- **npm** or **pnpm**
+- **Git**
 
 ### 1. Clone the repository
 ```bash
@@ -218,6 +240,20 @@ Client runs at `http://localhost:5173`
 Navigate to `http://localhost:5173` and log in using any of the [demo credentials](#-demo-credentials) below.
 
 > **Or try the live deployment → [TransitOps AI](https://transitops-ai-production.up.railway.app)**
+
+---
+
+## 🔧 Environment Variables
+
+Copy `.env.example` to `.env` inside the `/server` directory and configure:
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `PORT` | No | `3000` | Server port (Railway sets this automatically) |
+| `JWT_SECRET` | **Yes** | — | Secret key for signing JWT tokens. Use a strong random string in production |
+| `DATABASE_URL` | **Yes** | `file:./dev.db` | Prisma connection string. SQLite for dev, PostgreSQL for production |
+| `NODE_ENV` | No | `development` | Set to `production` to serve the built React frontend from the server |
+| `CORS_ORIGIN` | No | — | Additional allowed CORS origin (not needed in production monolith mode) |
 
 ---
 
@@ -262,9 +298,12 @@ TransitOps_AI/
 │   │   └── index.ts         # Express app entry point
 │   ├── uploads/             # Uploaded documents & avatars
 │   └── package.json
+├── docs/
+│   └── screenshots/         # App screenshots for README
 ├── package.json             # Root monorepo scripts
 ├── railway.json             # Railway deployment config
 ├── Procfile
+├── LICENSE                  # MIT License
 └── README.md
 ```
 
@@ -309,6 +348,20 @@ TransitOps_AI/
 - Forgot Password / Email Verification flows are intentionally excluded — seeded demo accounts are used instead.
 - AI Assistant uses a lightweight intent-matching engine rather than a full LLM integration in the base build.
 - File uploads are stored locally (`/uploads`), not on cloud storage, for this build.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how to get started:
+
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/my-feature`
+3. **Commit** your changes: `git commit -m 'feat: add my feature'`
+4. **Push** to the branch: `git push origin feature/my-feature`
+5. **Open** a Pull Request
+
+Please follow the [Conventional Commits](https://www.conventionalcommits.org/) specification for commit messages.
 
 ---
 
